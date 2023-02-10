@@ -157,12 +157,13 @@ export const uploadImage = async (req, res, next) => {
         const uploadResponse = await cloudinary.uploader.upload(fileStr.path, {
             folder:"postimg"
         });
-  
+       
         res.status(200).json({
             "success" : "1",
             "file": {
-               "url" : `https://${uploadResponse.url.slice(7)}`, 
+                "url" : `https://${uploadResponse.url.slice(7)}`, 
             }
+          
         })
     } catch (err) {
         console.error(err);

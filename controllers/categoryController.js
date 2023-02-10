@@ -70,9 +70,11 @@ export const uploadImage = async (req, res, next) => {
         });
         const img = uploadResponse.url
         const category = await CategoryModel.findByIdAndUpdate(cateId, {...req.body, "attachment": img } , {new: true, runValidator:true})
+        console.log("dia chi", category)
         res.status(200).json({
             status: 'OK',
             data: category
+           
         })
     } catch (err) {
         console.error(err);
