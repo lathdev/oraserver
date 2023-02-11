@@ -1,8 +1,8 @@
-import axios from "axios";
 import platformAPIClient from "../config/platformAPIClient.js";
 import { paymentModel } from "../models/paymentModel.js";
 import { UserModel } from "../models/UserModel.js";
-import pi from "../config/a2u.js"
+import { withdrawModel } from "../models/a2uModel.js";
+import {createWithdraw,createTxid,completeWithdraw} from "../config/a2u.js"
 
 export default function mountPaymentsEndpoints(router) {
   // handle the incomplete payment
@@ -81,4 +81,37 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
    
     return res.status(200).json({ message: `Hủy giao dịch ${paymentId}` });
   })
+
+  router.post('/withdraw', async (req, res) => {
+    const userUid = await req.body.piId
+    const amount = await req.body.amount
+    const paymentData = 
+    {
+      amount: amount,
+      memo: "WithDraw", // this is just an example
+     metadata: {withdraw: "Piora"},
+       uid: userUid }
+       console.log("lol",paymentData);
+    try {
+      console.log(paymentData);
+      const creatWithdrawModel = await withdrawModel.create({
+        uid: userUid,
+        balance: amount,
+        memo: "WithDraw", // this is just an example
+       metadata: {withdraw: "Piora"},
+         })
+      const paymentId = await createWithdraw(paymentData);
+      const updatepaymentId = await withdrawModel.findOneAndUpdate({  uid: userUid },  { paymentId: paymentId })
+      const txId = await createTxid(paymentId);
+      const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
+      const completeW = await completeWithdraw(paymentId,txId)
+     return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
+    }
+    catch (err) {
+      res.status(500).json({
+        error: err,
+    });
+    }
+   
+  });
 }
