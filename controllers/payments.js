@@ -101,12 +101,17 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
        metadata: {withdraw: "Piora"},
          })
       const paymentId = await createWithdraw(paymentData);
+    if (paymentId) {
+      console.log("paymentId",paymentId)
       const updatepaymentId = await withdrawModel.findOneAndUpdate({  uid: userUid },  { paymentId: paymentId })
       const txId = await createTxid(paymentId);
-      const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
-      const completeW = await completeWithdraw(paymentId,txId)
-     return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
-    }
+              if(txId) { console.log(txId)
+                         const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
+                        const completeW = await completeWithdraw(paymentId,txId)
+                        return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
+}
+ } 
+ }
     catch (err) {
       res.status(500).json({
         error: err,
