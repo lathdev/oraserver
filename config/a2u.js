@@ -22,7 +22,7 @@ export async function createTxid(hiiu) {
     return txid;
   }
     catch(err) {
-      console.log("Lỗi 2: ", err.data); 
+      console.log("Lỗi 2: ", err); 
     }
 }
 export async function completeWithdraw(lanh,hehe) {
@@ -33,6 +33,6 @@ export async function completeWithdraw(lanh,hehe) {
     return completedPayment;
   }
     catch(err) {
-      console.log("Lỗi 3: ", err.data); 
+      console.log("Lỗi 3: ", err); 
     }
 }
