@@ -2,7 +2,7 @@ import platformAPIClient from "../config/platformAPIClient.js";
 import { paymentModel } from "../models/paymentModel.js";
 import { UserModel } from "../models/UserModel.js";
 import { withdrawModel } from "../models/a2uModel.js";
-import {createWithdraw,createTxid,completeWithdraw} from "../config/a2u.js"
+import {createWithdraw,createTxid,completeWithdraw,incompleteWithdraw,cancelWithdraw} from "../config/a2u.js"
 
 export default function mountPaymentsEndpoints(router) {
   // handle the incomplete payment
@@ -85,6 +85,8 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
   router.post('/withdraw', async (req, res) => {
     const userUid = await req.body.piId
     const amount = await req.body.amount
+    const piName = await req.body.Piname
+    
     const paymentData = 
     {
       amount: amount,
@@ -95,7 +97,8 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
     try {
       console.log(paymentData);
       const creatWithdrawModel = await withdrawModel.create({
-        uid: userUid,
+       uid: userUid,
+       piName: piName,
         balance: amount,
         memo: "WithDraw", // this is just an example
        metadata: {withdraw: "Piora"},
@@ -103,14 +106,32 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
       const paymentId = await createWithdraw(paymentData);
     if (paymentId) {
       console.log("paymentId",paymentId)
-      const updatepaymentId = await withdrawModel.findOneAndUpdate({  uid: userUid },  { paymentId: paymentId })
-      const txId = await createTxid(paymentId);
-              if(txId) { console.log(txId)
-                         const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
-                        const completeW = await completeWithdraw(paymentId,txId)
-                        return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
-}
+      const checkDouble = await withdrawModel.find({paymentId: paymentId});
+      if (checkDouble.length!==0)  return res.status(400).json({ message: "Double pay" })
+      else {
+        const updatepaymentId = await withdrawModel.findOneAndUpdate({  uid: userUid },  { paymentId: paymentId })
+        console.log(updatepaymentId);
+       const txId = await createTxid(paymentId);
+               if(txId) { console.log("txid",txId)
+                          const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
+                         const completeW = await completeWithdraw(paymentId,txId)
+                         
+                         const UpdateBalance = await UserModel.findOneAndUpdate({ mail: piName },  { mobile: 0})
+                         console.log("Done",updatepaymentTxid,"status",completeW, "balance", UpdateBalance)
+                         return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
+ }
+      }
+    
+   
  } 
+ else {
+const getIncompleteWithdraw = await incompleteWithdraw();
+if (getIncompleteWithdraw) {
+  console.log("IncompleteWithdraw",getIncompleteWithdraw.incomplete_server_payments[0].identifier);
+  const calceledWithdraw =  await cancelWithdraw(getIncompleteWithdraw.incomplete_server_payments[0].identifier);
+  console.log("huy giao dich",calceledWithdraw);
+}
+ }
  }
     catch (err) {
       res.status(500).json({

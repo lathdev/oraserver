@@ -4,7 +4,9 @@ var schema = new mongoose.Schema({
         type: String
     
     },
-    
+    piName: {
+        type: String
+    },
     balance : {
         type: Number
     },
