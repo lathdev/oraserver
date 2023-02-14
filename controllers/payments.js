@@ -90,7 +90,7 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
     const paymentData = 
     {
       amount: amount,
-      memo: "WithDraw", // this is just an example
+      memo: "WithDraw", 
      metadata: {withdraw: "Piora"},
        uid: userUid }
        console.log("lol",paymentData);
@@ -100,7 +100,7 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
        uid: userUid,
        piName: piName,
         balance: amount,
-        memo: "WithDraw", // this is just an example
+        memo: "WithDraw", 
        metadata: {withdraw: "Piora"},
          })
       const paymentId = await createWithdraw(paymentData);
@@ -109,16 +109,19 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
       const checkDouble = await withdrawModel.find({paymentId: paymentId});
       if (checkDouble.length!==0)  return res.status(400).json({ message: "Double pay" })
       else {
-        const updatepaymentId = await withdrawModel.findOneAndUpdate({  uid: userUid },  { paymentId: paymentId })
+        const updatepaymentId = await withdrawModel.findOneAndUpdate({  _id: creatWithdrawModel._id },  { paymentId: paymentId })
         console.log(updatepaymentId);
        const txId = await createTxid(paymentId);
                if(txId) { console.log("txid",txId)
-                          const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ paymentId: paymentId  },  { txid:txId })
+                          const updatepaymentTxid = await withdrawModel.findOneAndUpdate({ _id: creatWithdrawModel._id },  { txid:txId })
                          const completeW = await completeWithdraw(paymentId,txId)
                          
                          const UpdateBalance = await UserModel.findOneAndUpdate({ mail: piName },  { mobile: 0})
                          console.log("Done",updatepaymentTxid,"status",completeW, "balance", UpdateBalance)
-                         return res.status(200).json({ message: `Đã tạo giao dịch ${completeW}` })
+                         return res.status(200).json({
+                           message: `Đã tạo giao dịch ${completeW}`,
+                           txid: txId
+                   })
  }
       }
     
