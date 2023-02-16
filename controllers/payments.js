@@ -60,12 +60,12 @@ export default function mountPaymentsEndpoints(router) {
     const txid = req.body.txid;
     const completePayment = await paymentModel.findOneAndUpdate({ paymentId: paymentId },  { txid: txid, paid: true  })
     const Balance = await UserModel.findOne({userName: userPi});
-    const UpdateBalance = await UserModel.findOneAndUpdate({ userName: userPi },  { mobile: Balance.mobile + 0.99 })
+     if (Balance) await UserModel.findOneAndUpdate({ userName: userPi },  { mobile: Balance.mobile + 0.99 })
     const ref = await UserModel.findOne({userName: userPi},{identification:1});
-    if (ref.identification) {
+    if (ref) {
       console.log("Ref of ",ref.identification);
       const BalanceRef = await UserModel.findOne({ userName: ref.identification });
-      const UpdateBalanceRef = await UserModel.findOneAndUpdate({ userName: ref.identification},  { mobile: BalanceRef.mobile + 0.01 })
+      if(BalanceRef) await UserModel.findOneAndUpdate({ userName: ref.identification},  { mobile: BalanceRef.mobile + 0.01 })
     }
    
     // let Pi server know that the payment is completed
