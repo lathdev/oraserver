@@ -51,8 +51,10 @@ export const createComment = async (req, res, next) => {
     }
 };
 export const deleteComment = async (req, res, next) => {
-    const { commentId } = req.body.commentId
+    const commentId = req.body.commentId
+    
     try {
+       
         await CommentsModel.findByIdAndDelete(commentId)
         res.status(200).json({
             status: 'OK',
