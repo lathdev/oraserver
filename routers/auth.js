@@ -8,6 +8,7 @@ import {
     createCategoryUser,
     deleteCategoryUser,
     updateUser,
+    blockUser,
     updateUserEmail,
     updatePassword,
     updateFollower,
@@ -16,7 +17,8 @@ import {
     authMail,
     confirmEmail, 
     userSavedPost,
-    getUserById
+    getUserById,
+   unblockUser
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -32,6 +34,8 @@ router.post('/mail/' , confirmEmail)
 router.post('/login', login)
 router.post('/loginpi', loginpi)
 router.put('/update/', verifyToken, updateUser)
+router.put('/block/', verifyToken, blockUser)
+router.put('/unblock/', verifyToken, unblockUser)
 router.put('/save/', verifyToken, userSavedPost)
 router.put('/update/email', verifyToken, updateUserEmail)
 router.put('/update/follower/',verifyToken, updateFollower)

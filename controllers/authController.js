@@ -200,6 +200,34 @@ export const updateUser = async (req, res, next) => {
     }
 
 };
+export const blockUser = async (req, res, next) => {
+    try {
+       const userId = req.body.userId
+            if (req.body.type=="blockCmt") await UserModel.findByIdAndUpdate(userId, {isBlockedCmt: true  })
+            if (req.body.type=="blockAll") await UserModel.findByIdAndUpdate(userId, {isBlockedAll: true  })
+        res.status(200).json({
+            status: 'OK',
+        
+        })
+    } catch (err) {
+        next(err)
+    }
+
+};
+export const unblockUser = async (req, res, next) => {
+    try {
+       const userId = req.body.userId
+            if (req.body.type=="blockCmt") await UserModel.findByIdAndUpdate(userId, {isBlockedCmt: false  })
+            if (req.body.type=="blockAll") await UserModel.findByIdAndUpdate(userId, {isBlockedAll: false  })
+        res.status(200).json({
+            status: 'OK',
+        
+        })
+    } catch (err) {
+        next(err)
+    }
+
+};
 export const updatePassword = async (req, res, next) => {
     try {
         const {

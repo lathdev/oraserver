@@ -90,9 +90,12 @@ app.get('/category/:slug', (req,res) => {
 app.get('/messages/', (req,res) => {
   res.sendFile(path.join(__dirname, './build/index.html'));
 });
+app.get('/category', (req,res) => {
+  res.sendFile(path.join(__dirname, './build/index.html'));
+});
 
 app.all('*',(req, res, next) => {
-  const err = new Error ('Đi đâu vào đây bạn eyy??')
+  const err = new Error ('404')
   err.statusCode = 404
   next(err)
 })

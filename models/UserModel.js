@@ -77,6 +77,14 @@ const schema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isBlockedCmt: {
+        type: Boolean,
+        default: false,
+    },
+    isBlockedAll: {
+        type: Boolean,
+        default: false,
+    },
     dateOfBirth : {
         type: 'string'
     },
