@@ -57,7 +57,7 @@ export default function mountPaymentsEndpoints(router) {
   // complete the current payment
   router.post('/complete',verifyToken, async (req, res) => {
     const userPi = req.body.paymentData.memo.slice(3);
-    const amount = req.body.paymentData.amount
+    const amount = req.body.paymentData.amount-0.0001
     console.log(userPi);
     const paymentId = req.body.paymentId;
     const txid = req.body.txid;

@@ -18,6 +18,11 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     },
+    comment:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comments'
+    },
+    
 }, {
     timestamps: true
 })

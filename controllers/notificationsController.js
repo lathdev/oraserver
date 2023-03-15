@@ -7,8 +7,22 @@ import {
 export const createPostNotifications = async (req, res, next) => {
     const {userId} = req.user
     const postId = req.body.postId
+    const commentId =req.body.commentId
     const user = req.body.user
-    if(postId) {
+    if (postId&&commentId&&user) {
+        try {
+          if (user!==userId) { const notification = await NotificationModel.create({user: user,parentId: userId,comment:commentId,post:postId})
+            res.status(200).json({
+                status: 'OK',
+                data: notification
+            });}
+        } catch (err) {
+            res.status(500).json({ 
+                error: err,
+            });
+        }
+    }
+   else if(postId) {
         try {
             const find = await UserModel.find({_id: userId})
             .select("followers")

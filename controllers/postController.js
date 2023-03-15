@@ -123,7 +123,8 @@ export const createPost = async (req, res, next) => {
     }
     } catch (err) {
         res.status(500).json({
-            err:"error"
+            err:err.message
+           
         })
     }
 };

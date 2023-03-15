@@ -11,13 +11,16 @@ var schema = new mongoose.Schema({
         trim: true,
         required:[true,'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự'],
         minlength:[10, 'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự'],
+        maxlength:[100, 'Tiêu đề bài viết không được quá 100 kí tự'],
+        
     },
     content: [
         mongoose.Schema.Types.Mixed,
        
     ],
     description: {
-        type: 'string'
+        type: 'string',
+        maxlength:[100, 'Tiêu đề bài viết không được quá 100 kí tự'],
     },
     slug: { type: String, slug: 'title', unique: true },
     vote: [

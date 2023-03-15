@@ -18,7 +18,9 @@ import {
     confirmEmail, 
     userSavedPost,
     getUserById,
-   unblockUser
+   unblockUser,
+   resetPassword,
+   resetPiPassword
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -41,6 +43,8 @@ router.put('/update/email', verifyToken, updateUserEmail)
 router.put('/update/follower/',verifyToken, updateFollower)
 router.put('/update/unfollower/',verifyToken, updateUnFollower)
 router.put('/password/', verifyToken, updatePassword)
+router.put('/resetpassword/', resetPassword)
+router.put('/resetpipassword/', resetPiPassword)
 router.put('/create/category/', verifyToken, createCategoryUser)
 router.put('/delete/category/', verifyToken, deleteCategoryUser)
 router.get('/:username', getUser)

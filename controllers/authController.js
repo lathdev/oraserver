@@ -261,6 +261,52 @@ export const updatePassword = async (req, res, next) => {
         });
     }
 };
+export const resetPassword = async (req, res, next) => {
+    try {
+        const accessToken= req.body.accessToken;
+        const user = await UserModel.findOne({
+            mail: req.body.email
+         
+        })
+        if (!user||accessToken.length<30) {
+            const err = new Error('Lỗi')
+            err.statusCode = 400
+            return next(err)
+        }
+        
+        else {
+            res.status(200).json({
+                status: 'OK',
+                data: user.userName
+            });
+        } 
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
+export const resetPiPassword = async (req, res, next) => {
+    try {  
+           req.body.password = await bcrypt.hash(req.body.password, 10)
+            const user = await UserModel.findOneAndUpdate({mail: req.body.email}, {
+                password: req.body.password
+            }, {
+                new: true,
+                runValidator: true
+            })
+            res.status(200).json({
+                status: 'OK',
+                data: user
+            });
+        } 
+     catch (err) {
+        console.log(err)
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
 export const updateUserEmail = async (req, res, next) => {
     try {
         const {
