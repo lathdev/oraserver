@@ -4,10 +4,11 @@ import {
 import {
     UserModel
 } from "../models/UserModel.js";
-import { v2 as cloudinary } from 'cloudinary'
+
 import s3 from '../config/yandexcloud.js'
-import { baremetalsolution } from "googleapis/build/src/apis/baremetalsolution/index.js";
+
 export const getAllPosts = async (req, res, next) => {
+    
     try {
         const posts = await PostModel.find().sort({createdAt:-1})
         .populate('author','userName avatar displayName postSaved')
@@ -71,6 +72,12 @@ export const getPostsByUserName = async (req, res, next) => {
 
 export const createPost = async (req, res, next) => {
     try {
+        let items = req.body.content.blocks
+        let textL = 0;
+items.map((item) =>  {
+ if (item.data.text) textL+=item.data.text.length
+       
+    });
         const {userId} = req.user
        const dublicate = await PostModel.find({title: req.body.title})
         if(req.body.title.length < 10 ){
@@ -84,7 +91,8 @@ export const createPost = async (req, res, next) => {
             })
         }
          
-       else if(req.body.content.blocks.length < 2 ){
+       else if(textL < 100 ){
+
             res.status(500).json({
                 err:"contentlimit"
             })

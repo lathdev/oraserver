@@ -22,6 +22,10 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comments'
     },
+    reply:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'replyComment'
+    },
     
 }, {
     timestamps: true

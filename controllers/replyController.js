@@ -40,6 +40,19 @@ export const  getReplyComment = async (req, res, next) => {
         });
     }
 };
+export const deleteReplyComment = async (req, res, next) => {
+    const replyId = req.body.replyId
+    
+    try {
+        await replyCommentModel.findByIdAndDelete(replyId)
+        res.status(200).json({
+            status: 'OK',
+            message:'Bình luận đã được xóa thành công'
+        })
+    } catch (err) {
+        next(err)
+    }
+};
 export const voteReplyComment = async (req, res, next) => {
     try {
         const {userId} = req.user
