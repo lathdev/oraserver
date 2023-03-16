@@ -8,9 +8,9 @@ import {
 import s3 from '../config/yandexcloud.js'
 
 export const getAllPosts = async (req, res, next) => {
-    
+   const lang = req.header('authorization');
     try {
-        const posts = await PostModel.find().sort({createdAt:-1})
+        const posts = await PostModel.find({lang:lang}).sort({createdAt:-1}).limit(269)
         .populate('author','userName avatar displayName postSaved')
         .populate('category','name slug')
         res.status(200).json({

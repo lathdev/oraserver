@@ -53,7 +53,10 @@ var schema = new mongoose.Schema({
     comment_count: { 
         type: Number,
         default:0
-    }
+    },
+    lang:{  
+        type: 'string',
+    },
 }, {
     timestamps: true
 })
