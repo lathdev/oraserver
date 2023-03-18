@@ -8,9 +8,10 @@ import {
 import s3 from '../config/yandexcloud.js'
 
 export const getAllPosts = async (req, res, next) => {
-   const lang = req.header('authorization');
+   const lang = req.header('authorization') ;
     try {
-        const posts = await PostModel.find({lang:lang}).sort({createdAt:-1}).limit(269)
+        if(lang!=="all") {
+         const posts = await PostModel.find({lang:lang}).sort({createdAt:-1}).limit(269)
         .populate('author','userName avatar displayName postSaved')
         .populate('category','name slug')
         res.status(200).json({
@@ -19,7 +20,20 @@ export const getAllPosts = async (req, res, next) => {
                 posts
             }
         });
-    } catch (err) {
+     }
+        else {
+   const posts = await PostModel.find().sort({createdAt:-1}).limit(269)
+        .populate('author','userName avatar displayName postSaved')
+        .populate('category','name slug')
+        res.status(200).json({
+            status: 'OK',
+            data: {
+                posts
+            }
+        });
+        }
+    } 
+    catch (err) {
         res.status(500).json({
             error: err,
         });
