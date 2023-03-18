@@ -65,6 +65,23 @@ export const deleteComment = async (req, res, next) => {
     }
 };
 
+export const editComment = async (req, res, next) => {
+    const commentId = req.body.commentId
+    const content = req.body.content
+    try {
+     const newcomment = await CommentsModel.findByIdAndUpdate(commentId,{content: content})
+        res.status(200).json({
+            status: 'OK',
+            message:'Bình luận đã được sửa thành công',
+            data:{
+                newcomment
+            }
+        })
+    } catch (err) {
+        next(err)
+    }
+};
+
 export const voteComment = async (req, res, next) => {
     try {
         const {userId} = req.user

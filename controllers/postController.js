@@ -64,7 +64,7 @@ export const getPostsByUserName = async (req, res, next) => {
     const user = await UserModel.find({
         userName: username
     })
-   const userId= user[0]._id.toString()
+   const userId= user[0]?._id.toString()
     try {
         const posts = await PostModel.find({
             author: userId

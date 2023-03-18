@@ -3,7 +3,8 @@ import {
     replyComment,
     getReplyComment,
     voteReplyComment,
-    deleteReplyComment
+    deleteReplyComment,
+    editReply
 } from '../controllers/replyController.js'
 import {
     verifyToken,
@@ -13,4 +14,5 @@ router.post('/:id', verifyToken, replyComment)
 router.get('/:id', getReplyComment)
 router.post('/reply/vote', verifyToken, voteReplyComment)
 router.post('/reply/delete', verifyToken, deleteReplyComment)
+router.put('/reply/edit', verifyToken, editReply)
 export default router

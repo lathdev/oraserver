@@ -53,6 +53,22 @@ export const deleteReplyComment = async (req, res, next) => {
         next(err)
     }
 };
+export const editReply = async (req, res, next) => {
+    const replyId = req.body.replyId
+    const content = req.body.content
+    try {
+     const newreply = await replyCommentModel.findByIdAndUpdate(replyId, {content: content})
+        res.status(200).json({
+            status: 'OK',
+            message:'Bình luận đã được sửa thành công',
+            data:{
+                newreply
+            }
+        })
+    } catch (err) {
+        next(err)
+    }
+};
 export const voteReplyComment = async (req, res, next) => {
     try {
         const {userId} = req.user
