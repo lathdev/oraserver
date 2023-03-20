@@ -142,8 +142,9 @@ if (getIncompleteWithdraw) {
  }
  }
     catch (err) {
+      console.log("Huhuhu", err)
       res.status(500).json({
-        error: err.response.data,
+        error: err.response,
     });
     }
    
