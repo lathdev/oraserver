@@ -10,7 +10,22 @@ export const createPostNotifications = async (req, res, next) => {
     const commentId =req.body.commentId
     const replyId =req.body.replyId
     const user = req.body.user
-    if (postId&&commentId&&user&&!replyId) {
+    const tip = req.body.tip
+    if (tip) {
+        try {
+            console.log(tip)
+            if (user!==userId) { const notification = await NotificationModel.create({user: user,parentId: userId,tip: tip})
+              res.status(200).json({
+                  status: 'OK',
+                  data: notification
+              });}
+          } catch (err) {
+              res.status(500).json({ 
+                  error: err,
+              });
+          }
+    }
+   else if (postId&&commentId&&user&&!replyId) {
         try {
           if (user!==userId) { const notification = await NotificationModel.create({user: user,parentId: userId,comment:commentId,post:postId})
             res.status(200).json({
