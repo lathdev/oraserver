@@ -4,6 +4,7 @@ import { UserModel } from "../models/UserModel.js";
 import { withdrawModel } from "../models/a2uModel.js";
 import {createWithdraw,createTxid,completeWithdraw,incompleteWithdraw,cancelWithdraw} from "../config/a2u.js"
 import { verifyToken } from "../middlewares/verifyToken.js";
+// import { createPayment, submitPayment, completePayment, getIncompleteServerPayments, cancelPayment} from "./appToUser.js";
 export default function mountPaymentsEndpoints(router) {
 
   // handle the incomplete payment
@@ -15,7 +16,7 @@ export default function mountPaymentsEndpoints(router) {
 
     try {
       await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, { txid });
-      return res.status(200).json({ message: `Giao dich thanh cong ${paymentId}` });
+      return res.status(200).json({ message: `Completed ${paymentId}` });
     } 
     catch (err) {
       res.status(500).json({
@@ -29,8 +30,7 @@ export default function mountPaymentsEndpoints(router) {
   router.post('/approve',verifyToken, async (req, res) => {
   const paymentId = req.body.paymentId;
   const userPi = req.body.paymentData.memo.slice(3);
-  const amount = req.body.paymentData.amout
-  console.log(userPi);
+  const amount = req.body.paymentData.amount
  const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
     const creatPayment = await paymentModel.create({
       user: userPi,
@@ -79,8 +79,7 @@ export default function mountPaymentsEndpoints(router) {
   // handle the cancelled payment
   router.post('/cancelled_payment',verifyToken, async (req, res) => {
 const paymentId = req.body.paymentId;
-
-const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymentId },  { cancelled: true })
+ await paymentModel.findOneAndUpdate({ paymentId: paymentId },  { cancelled: true })
    
     return res.status(200).json({ message: `Canceled payment ${paymentId}` });
   })
@@ -94,12 +93,12 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
     let month = newDate.getMonth() + 1;
     let year = newDate.getFullYear();
     let nowWithdraw = date.toString() + month.toString() + year.toString()
-    const paymentData = 
-    {
-      amount: amount,
-      memo: "WithDraw", 
-     metadata: {withdraw: "Piora"},
-       uid: userUid }
+    // const paymentData = 
+    // {
+    //   amount: amount,
+    //   memo: "WithDraw", 
+    //   metadata: {withdraw: "UserWithdraw"},
+    //   uid: userUid }
     try {
   
       const creatWithdrawModel = await withdrawModel.create({
@@ -109,7 +108,7 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
         memo: "WithDraw", 
        metadata: {withdraw: "Piora"},
          })
-      const paymentId = await createWithdraw(paymentData);
+      const paymentId = await createWithdraw(amount, userUid);
     if (paymentId) {
       console.log("paymentId",paymentId)
       const checkDouble = await withdrawModel.find({paymentId: paymentId});
@@ -135,8 +134,8 @@ const cancelledPayment = await paymentModel.findOneAndUpdate({ paymentId: paymen
  else {
 const getIncompleteWithdraw = await incompleteWithdraw();
 if (getIncompleteWithdraw) {
-  console.log("IncompleteWithdraw",getIncompleteWithdraw.incomplete_server_payments[0].identifier);
-  const calceledWithdraw =  await cancelWithdraw(getIncompleteWithdraw.incomplete_server_payments[0].identifier);
+  console.log("IncompleteWithdraw",getIncompleteWithdraw.incomplete_server_payments[0]?.identifier);
+  const calceledWithdraw =  await cancelWithdraw(getIncompleteWithdraw.incomplete_server_payments[0]?.identifier);
   console.log("Cancel Payment",calceledWithdraw);
 }
  }
@@ -144,7 +143,7 @@ if (getIncompleteWithdraw) {
     catch (err) {
       console.log("Huhuhu", err)
       res.status(500).json({
-        error: err.response,
+        error: err,
     });
     }
    

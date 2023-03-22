@@ -3,6 +3,7 @@ import {
 } from "../models/UserModel.js";
 import { NotificationModel } from "../models/NotificationModel.js";
 import jwt from 'jsonwebtoken'
+import axios from "axios";
 import bcrypt from 'bcryptjs'
 var otp = 241001;
 export const register = async (req, res, next) => {
@@ -78,14 +79,18 @@ export const login = async (req, res, next) => {
 };
 export const loginpi = async (req, res, next) => {
     try {
-         
-            console.log(req.body);
-            const accessToken= req.body.accessToken;
+        const accessToken = req.body.accessToken
+            const option = {
+                method: "get",
+                url: `https://api.minepi.com/v2/me`,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            };
+            await axios(option);
         const user = await UserModel.findOne({
             mail: req.body.piUser
          
         })
-        if (!user||accessToken.length<30) {
+        if (!user) {
             const err = new Error('Lỗi')
             err.statusCode = 400
             return next(err)
@@ -288,6 +293,13 @@ export const resetPassword = async (req, res, next) => {
 };
 export const resetPiPassword = async (req, res, next) => {
     try {  
+        const option = {
+            method: "get",
+            url: `https://api.minepi.com/v2/me`,
+            headers: { Authorization: `Bearer ${req.body.accessToken}` }
+        };
+        const validate = await axios(option);
+        console.log(validate)
            req.body.password = await bcrypt.hash(req.body.password, 10)
             const user = await UserModel.findOneAndUpdate({mail: req.body.email}, {
                 password: req.body.password
@@ -487,8 +499,14 @@ export const authMail = async (req, res, next) => {
             mail: email
         })
         if(user.length === 0){
-       
         const token = jwt.sign(otp, process.env.APP_SECRET)
+        const option = {
+            method: "get",
+            url: `https://api.minepi.com/v2/me`,
+            headers: { Authorization: `Bearer ${req.body.accessToken}` }
+        };
+        const validate = await axios(option);
+        console.log(validate)
         res.status(200).json({
             status: 'OK',
             data: "authpidone"
